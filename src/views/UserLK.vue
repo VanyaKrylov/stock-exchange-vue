@@ -71,8 +71,8 @@
           >{{ company.name }}</option
         >
       </select>
-      <input type="input" value="Create Buy order" @click="buyOrder" />
-      <input type="input" value="Create Sell order" @click="sellOrder" />
+      <input type="button" value="Create Buy order" @click="buyOrder" />
+      <input type="button" value="Create Sell order" @click="sellOrder" />
     </form>
     <h3>List of current orders</h3>
     <table>
@@ -209,7 +209,7 @@ export default {
     getAllCurrentOrders() {
       axios({
         method: "get",
-        url: "http://localhost:8181/api/v0/user/lk/current-orders",
+        url: "http://localhost:8181/api/v0/user/lk/orders",
         headers: { Authorization: this.$store.state.token }
       })
         .then(response => {
@@ -224,12 +224,101 @@ export default {
           }
         });
     },
-    addMoney() {},
-    buyOrder() {},
-    sellOrder() {},
-    deleteOrders() {},
+    addMoney() {
+      axios({
+        method: "patch",
+        url: "http://localhost:8181/api/v0/user/lk/capital",
+        headers: { Authorization: this.$store.state.token },
+        data: {
+          capital: this.inputCapital
+        }
+      })
+        .then(response => {
+          console.log(response.headers.authorization);
+          this.inputCapital = "";
+          this.updatePageInfo();
+          //handle response and save JWT
+        })
+        .catch(err => {
+          console.log(err);
+          this.errors.push(err.response.data.error);
+        });
+    },
+    buyOrder() {
+      axios({
+        method: "patch",
+        url: "http://localhost:8181/api/v0/user/lk/orders?buy",
+        headers: { Authorization: this.$store.state.token },
+        data: {
+          size: this.orderSize,
+          minPrice: this.orderMinPrice,
+          maxPrice: this.orderMaxPrice,
+          id: this.orderCompany
+        }
+      })
+        .then(response => {
+          console.log(response.headers.authorization);
+          this.orderSize = "";
+          this.orderMinPrice = "";
+          this.orderMaxPrice = "";
+          this.orderCompany = "";
+          this.updatePageInfo();
+          //handle response and save JWT
+        })
+        .catch(err => {
+          console.log(err);
+          this.errors.push(err.response.data.error);
+        });
+    },
+    sellOrder() {
+      axios({
+        method: "patch",
+        url: "http://localhost:8181/api/v0/user/lk/orders?sell",
+        headers: { Authorization: this.$store.state.token },
+        data: {
+          size: this.orderSize,
+          minPrice: this.orderMinPrice,
+          maxPrice: this.orderMaxPrice,
+          id: this.orderCompany
+        }
+      })
+        .then(response => {
+          console.log(response.headers.authorization);
+          this.orderSize = "";
+          this.orderMinPrice = "";
+          this.orderMaxPrice = "";
+          this.orderCompany = "";
+          this.updatePageInfo();
+          //handle response and save JWT
+        })
+        .catch(err => {
+          console.log(err);
+          this.errors.push(err.response.data.error);
+        });
+    },
+    deleteOrders() {
+      axios({
+        method: "delete",
+        url: "http://localhost:8181/api/v0/user/lk/orders",
+        headers: { Authorization: this.$store.state.token },
+        data: {
+          orderId: this.orderToDeleteId
+        }
+      })
+        .then(response => {
+          console.log(response.headers.authorization);
+          this.orderToDeleteId = "";
+          this.updatePageInfo();
+          //handle response and save JWT
+        })
+        .catch(err => {
+          console.log(err);
+          this.errors.push(err.response.data.error);
+        });
+    },
     deleteAccount() {},
     updatePageInfo() {
+      this.getCapital();
       this.getAvailableStocks();
       this.getOwnedStocks();
       this.getAllCompanies();
