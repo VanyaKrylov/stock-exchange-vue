@@ -1,132 +1,137 @@
 <template>
   <div>
-    <h1>Hello Broker</h1>
-    <h2 v-if="errors.length > 0">
-      Errors:
-      <ul>
-        <li v-for="error in errors" :key="error">{{ error }}</li>
-      </ul>
-    </h2>
-    <h3>Capital is: {{ capital }}</h3>
-    <h3>Available company stocks</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Size</th>
-          <th>Price</th>
-          <th>Company name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="stock in stocks" :key="stock.id">
-          <td>{{ stock.id }}</td>
-          <td>{{ stock.size }}</td>
-          <td>{{ stock.minPrice }}</td>
-          <td>{{ stock.company.name }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <h3>Buy company stocks</h3>
-    <form class="buy-company-stocks" @submit.prevent="buyCompanyStocks">
-      <label for="id">Order id</label>
-      <input type="text" placeholder="id" id="id" v-model="orderId" />
-      <label for="size">Amount</label>
-      <input type="text" placeholder="size" id="size" v-model="orderSize" />
-      <input type="submit" value="Buy" />
-    </form>
-    <h3>Owned stocks</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Company name</th>
-          <th>Stock type</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="stock in ownedStocks" :key="stock.company.name">
-          <td>{{ stock.company.name }}</td>
-          <td>{{ stock.type }}</td>
-          <td>{{ stock.amount }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <h3>Pending clients orders</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Type</th>
-          <th>Size</th>
-          <th>minPrice</th>
-          <th>maxPrice</th>
-          <th>Company name</th>
-          <th>Created at</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="order in clientOrders" :key="order.id">
-          <td>{{ order.id }}</td>
-          <td>{{ order.type }}</td>
-          <td>{{ order.size }}</td>
-          <td>{{ order.minPrice }}</td>
-          <td>{{ order.maxPrice }}</td>
-          <td>{{ order.company.name }}</td>
-          <td>{{ order.timestamp }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <h3>Manage clients orders</h3>
-    <form class="manage-client-orders">
-      <label for="idd">Order id</label>
-      <input
-        type="text"
-        name="orderId"
-        id="idd"
-        placeholder="id"
-        v-model="clientOrderId"
-      />
-      <label for="amount">Amount</label>
-      <input
-        type="text"
-        name="size"
-        id="amount"
-        placeholder="size"
-        v-model="clientOrderSize"
-      />
-      <label for="price">Price</label>
-      <input
-        type="text"
-        name="price"
-        id="price"
-        placeholder="sum"
-        v-model="clientOrderPrice"
-      />
-      <input
-        type="button"
-        name="buy"
-        value="Buy orders"
-        @click="buyClientOrders"
-      />
-      <input
-        type="button"
-        name="sell"
-        value="Sell orders"
-        @click="sellClientOrders"
-      />
-    </form>
-    <form class="publish-client-orders" @submit.prevent="publishClientOrders">
-      <label for="orderId">Order id</label>
-      <input
-        type="text"
-        name="orderId"
-        id="orderId"
-        placeholder="id"
-        v-model="clientOrderToPublishId"
-      />
-      <button type="submit">Publish</button>
-    </form>
+    <div v-if="permitted">
+      <h1>Hello Broker</h1>
+      <!--      <h2 v-if="errors.length > 0">
+        Errors:
+        <ul>
+          <li v-for="error in errors" :key="error">{{ error }}</li>
+        </ul>
+      </h2>-->
+      <h3>Capital is: {{ capital }}</h3>
+      <h3>Available company stocks</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Company name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="stock in stocks" :key="stock.id">
+            <td>{{ stock.id }}</td>
+            <td>{{ stock.size }}</td>
+            <td>{{ stock.minPrice }}</td>
+            <td>{{ stock.company.name }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Buy company stocks</h3>
+      <form class="buy-company-stocks" @submit.prevent="buyCompanyStocks">
+        <label for="id">Order id</label>
+        <input type="text" placeholder="id" id="id" v-model="orderId" />
+        <label for="size">Amount</label>
+        <input type="text" placeholder="size" id="size" v-model="orderSize" />
+        <input type="submit" value="Buy" />
+      </form>
+      <h3>Owned stocks</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Company name</th>
+            <th>Stock type</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="stock in ownedStocks" :key="stock.company.name">
+            <td>{{ stock.company.name }}</td>
+            <td>{{ stock.type }}</td>
+            <td>{{ stock.amount }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Pending clients orders</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>minPrice</th>
+            <th>maxPrice</th>
+            <th>Company name</th>
+            <th>Created at</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="order in clientOrders" :key="order.id">
+            <td>{{ order.id }}</td>
+            <td>{{ order.type }}</td>
+            <td>{{ order.size }}</td>
+            <td>{{ order.minPrice }}</td>
+            <td>{{ order.maxPrice }}</td>
+            <td>{{ order.company.name }}</td>
+            <td>{{ order.timestamp }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Manage clients orders</h3>
+      <form class="manage-client-orders">
+        <label for="idd">Order id</label>
+        <input
+          type="text"
+          name="orderId"
+          id="idd"
+          placeholder="id"
+          v-model="clientOrderId"
+        />
+        <label for="amount">Amount</label>
+        <input
+          type="text"
+          name="size"
+          id="amount"
+          placeholder="size"
+          v-model="clientOrderSize"
+        />
+        <label for="price">Price</label>
+        <input
+          type="text"
+          name="price"
+          id="price"
+          placeholder="sum"
+          v-model="clientOrderPrice"
+        />
+        <input
+          type="button"
+          name="buy"
+          value="Buy orders"
+          @click="buyClientOrders"
+        />
+        <input
+          type="button"
+          name="sell"
+          value="Sell orders"
+          @click="sellClientOrders"
+        />
+      </form>
+      <form class="publish-client-orders" @submit.prevent="publishClientOrders">
+        <label for="orderId">Order id</label>
+        <input
+          type="text"
+          name="orderId"
+          id="orderId"
+          placeholder="id"
+          v-model="clientOrderToPublishId"
+        />
+        <button type="submit">Publish</button>
+      </form>
+    </div>
+    <div v-if="permitted === false">
+      <h1>403 Forbidden</h1>
+    </div>
   </div>
 </template>
 
@@ -137,6 +142,7 @@ export default {
   name: "BrokerLK",
   data() {
     return {
+      permitted: true,
       errors: [],
       capital: "",
       stocks: [],
@@ -171,6 +177,7 @@ export default {
         .catch(err => {
           console.log(err);
           this.errors.push(err.response.data.error);
+          alert(err.response.data.error);
         });
     },
     buyClientOrders() {
@@ -195,6 +202,7 @@ export default {
         .catch(err => {
           console.log(err);
           this.errors.push(err.response.data.error);
+          alert(err.response.data.error);
         });
     },
     sellClientOrders() {
@@ -219,6 +227,7 @@ export default {
         .catch(err => {
           console.log(err);
           this.errors.push(err.response.data.error);
+          alert(err.response.data.error);
         });
     },
     publishClientOrders() {
@@ -239,6 +248,7 @@ export default {
         .catch(err => {
           console.log(err);
           this.errors.push(err.response.data.error);
+          alert(err.response.data.error);
         });
     },
     getCapital() {
@@ -256,6 +266,9 @@ export default {
           if (e.response.status === 401) {
             this.$store.commit("remove");
             this.$router.push("/");
+          }
+          if (e.response.status === 403) {
+            this.permitted = false;
           }
         });
     },
@@ -275,6 +288,9 @@ export default {
             this.$store.commit("remove");
             this.$router.push("/");
           }
+          if (e.response.status === 403) {
+            this.permitted = false;
+          }
         });
     },
     getOwnedStocks() {
@@ -292,6 +308,9 @@ export default {
           if (e.response.status === 401) {
             this.$store.commit("remove");
             this.$router.push("/");
+          }
+          if (e.response.status === 403) {
+            this.permitted = false;
           }
         });
     },
@@ -311,6 +330,9 @@ export default {
             this.$store.commit("remove");
             this.$router.push("/");
           }
+          if (e.response.status === 403) {
+            this.permitted = false;
+          }
         });
     },
     updatePageInfo() {
@@ -318,10 +340,14 @@ export default {
       this.getStocks();
       this.getOwnedStocks();
       this.getClientOrders();
+      if (this.permitted === false) {
+        alert("403 Forbidden");
+      }
       this.errors = [];
     }
   },
   created() {
+    this.permitted = true;
     this.updatePageInfo();
   }
 };

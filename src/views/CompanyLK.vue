@@ -1,52 +1,57 @@
 <template>
   <div>
-    <h1>Hello, company</h1>
-    <h2 v-if="errors.length > 0">
-      Errors:
-      <ul>
-        <li v-for="error in errors" :key="error">{{ error }}</li>
-      </ul>
-    </h2>
-    <h3>Capital is: {{ capital }}</h3>
-    <h3>Stocks</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="stock in stocks" :key="stock">
-          <td>{{ stock.type }}</td>
-          <td>{{ stock.amount }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <h3>Publish new stocks</h3>
-    <form class="publish-new-stokcs" @submit.prevent="publishStocks">
-      <select v-model="stockType">
-        <option>COMMON</option>
-        <option>PREFERRED</option>
-      </select>
-      <label for="size">Amount</label>
-      <input
-        type="text"
-        name="amount"
-        id="size"
-        placeholder="size"
-        v-model="stocksAmount"
-      />
-      <label for="price">Price</label>
-      <input
-        type="text"
-        name="price"
-        id="price"
-        placeholder="sum"
-        v-model="stocksPrice"
-      />
-      <button type="submit">Publish</button><br />
-    </form>
+    <div v-if="permitted">
+      <h1>Hello, company</h1>
+      <!--      <h2 v-if="errors.length > 0">
+        Errors:
+        <ul>
+          <li v-for="error in errors" :key="error">{{ error }}</li>
+        </ul>
+      </h2>-->
+      <h3>Capital is: {{ capital }}</h3>
+      <h3>Stocks</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="stock in stocks" :key="stock">
+            <td>{{ stock.type }}</td>
+            <td>{{ stock.amount }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>Publish new stocks</h3>
+      <form class="publish-new-stokcs" @submit.prevent="publishStocks">
+        <select v-model="stockType">
+          <option>COMMON</option>
+          <option>PREFERRED</option>
+        </select>
+        <label for="size">Amount</label>
+        <input
+          type="text"
+          name="amount"
+          id="size"
+          placeholder="size"
+          v-model="stocksAmount"
+        />
+        <label for="price">Price</label>
+        <input
+          type="text"
+          name="price"
+          id="price"
+          placeholder="sum"
+          v-model="stocksPrice"
+        />
+        <button type="submit">Publish</button><br />
+      </form>
+    </div>
+    <div v-if="permitted === false">
+      <h1>403 Forbidden</h1>
+    </div>
   </div>
 </template>
 
@@ -57,6 +62,7 @@ export default {
   name: "CompanyLK",
   data() {
     return {
+      permitted: true,
       capital: "",
       stocks: [],
       errors: [],
@@ -82,6 +88,9 @@ export default {
             this.$store.commit("remove");
             this.$router.push("/");
           }
+          if (e.response.status === 403) {
+            this.permitted = false;
+          }
         });
     },
     getStocks() {
@@ -99,6 +108,9 @@ export default {
           if (e.response.status === 401) {
             this.$store.commit("remove");
             this.$router.push("/");
+          }
+          if (e.response.status === 403) {
+            this.permitted = false;
           }
         });
     },
@@ -124,6 +136,7 @@ export default {
         .catch(err => {
           console.log(err);
           this.errors.push(err.response.data.error);
+          alert(err.response.data.error);
         });
     },
     updatePageInfo() {

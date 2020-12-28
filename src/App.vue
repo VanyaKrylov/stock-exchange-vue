@@ -11,8 +11,7 @@
 export default {
   data: () => ({
     token: ""
-  }),
-  deactivated() {}
+  })
 };
 </script>
 
