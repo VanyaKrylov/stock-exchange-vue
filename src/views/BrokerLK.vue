@@ -7,7 +7,6 @@
         <li v-for="error in errors" :key="error">{{ error }}</li>
       </ul>
     </h2>
-    <h2>Capital is: {{ capital }}</h2>
     <h3>Capital is: {{ capital }}</h3>
     <h3>Available company stocks</h3>
     <table>
