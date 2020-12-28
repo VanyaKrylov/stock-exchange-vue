@@ -13,8 +13,9 @@ export default new Vuex.Store({
       localStorage.setItem("user-token", val);
       state.token = val;
     },
-    remove() {
+    remove(state) {
       localStorage.removeItem("user-token");
+      state.token = "";
     }
   },
   actions: {},

@@ -1,9 +1,13 @@
 <template>
   <div id="app">
-    <h1 v-if="$router.currentRoute.path === '/'">
-      Hi!
-    </h1>
+    <div v-if="$router.currentRoute.path === '/'">
+      <h1>hi!</h1>
+      <button type="button" @click="signUp">Sign Up</button>
+    </div>
+    <br />
     <router-view></router-view>
+    <br />
+    <button type="button" @click="logout">Logout</button>
   </div>
 </template>
 
@@ -11,7 +15,16 @@
 export default {
   data: () => ({
     token: ""
-  })
+  }),
+  methods: {
+    signUp() {
+      this.$router.push("/home");
+    },
+    logout() {
+      this.$store.commit("remove");
+      this.$router.push("/");
+    }
+  }
 };
 </script>
 

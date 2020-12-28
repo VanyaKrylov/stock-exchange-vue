@@ -8,6 +8,13 @@
       <input v-model="fee" />
       <label>Capital</label>
       <input v-model="capital" />
+      <input
+        type="password"
+        id="Password"
+        placeholder="Password"
+        v-model="password"
+      />
+      <label for="Password">Password</label>
       <input type="submit" value="Create" />
     </form>
     <p v-if="errors.length > 0">{{ errors }}</p>
@@ -24,6 +31,7 @@ export default {
       name: "",
       fee: "",
       capital: "",
+      password: "",
       errors: ""
     };
   },
@@ -31,18 +39,20 @@ export default {
     createNewBroker: function() {
       axios({
         method: "post",
-        url: "http://localhost:8181/api/v0/broker/new",
+        url: "http://localhost:8181/sign-up/broker",
         data: {
           name: this.name,
           fee: this.fee,
-          capital: this.capital
+          capital: this.capital,
+          password: this.password
         }
       })
         .then(response => {
           console.log(response);
+          this.$router.push("/");
         })
         .catch(e => {
-          this.errors = e.response.data.error;
+          alert(e.response.data.error);
         });
     }
   }
