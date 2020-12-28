@@ -5,6 +5,9 @@ import NewCompany from "@/views/NewCompany";
 import NewBroker from "@/views/NewBroker";
 import NewUser from "@/views/NewUser";
 import Login from "@/views/Login";
+import BrokerLK from "@/views/BrokerLK";
+import UserLK from "@/views/UserLK";
+import CompanyLK from "@/views/CompanyLK";
 
 Vue.use(VueRouter);
 
@@ -33,6 +36,21 @@ const routes = [
     path: "/new-company",
     name: "New company",
     component: NewCompany
+  },
+  {
+    path: "/broker/lk",
+    name: "Broker LK",
+    component: BrokerLK
+  },
+  {
+    path: "/user/lk",
+    name: "User LK",
+    component: UserLK
+  },
+  {
+    path: "/company/lk",
+    name: "Company LK",
+    component: CompanyLK
   }
   /*{
     path: "/about",

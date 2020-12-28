@@ -41,7 +41,9 @@ export default {
           password: this.password
         })
         .then(response => {
-          console.log(response);
+          console.log(response.headers.authorization);
+          this.$router.push(response.data.location.slice(6));
+          this.$store.commit("set", response.headers.authorization);
           //handle response and save JWT
         })
         .catch(err => {
