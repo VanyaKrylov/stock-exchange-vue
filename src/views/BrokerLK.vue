@@ -1,6 +1,12 @@
 <template>
   <div>
     <h1>Hello Broker</h1>
+    <h2 v-if="errors.length > 0">
+      Errors:
+      <ul>
+        <li v-for="error in errors" :key="error">{{ error }}</li>
+      </ul>
+    </h2>
     <h2>Capital is: {{ capital }}</h2>
     <h3>Capital is: {{ capital }}</h3>
     <h3>Available company stocks</h3>
@@ -111,6 +117,17 @@
         @click="sellClientOrders"
       />
     </form>
+    <form class="publish-client-orders" @submit.prevent="publishClientOrders">
+      <label for="orderId">Order id</label>
+      <input
+        type="text"
+        name="orderId"
+        id="orderId"
+        placeholder="id"
+        v-model="clientOrderToPublishId"
+      />
+      <button type="submit">Publish</button>
+    </form>
   </div>
 </template>
 
@@ -121,6 +138,7 @@ export default {
   name: "BrokerLK",
   data() {
     return {
+      errors: [],
       capital: "",
       stocks: [],
       orderId: "",
@@ -129,7 +147,8 @@ export default {
       clientOrders: [],
       clientOrderId: "",
       clientOrderSize: "",
-      clientOrderPrice: ""
+      clientOrderPrice: "",
+      clientOrderToPublishId: ""
     };
   },
   methods: {
@@ -152,12 +171,13 @@ export default {
         })
         .catch(err => {
           console.log(err);
+          this.errors.push(err.response.data.error);
         });
     },
     buyClientOrders() {
       axios({
-        method: "post",
-        url: "http://localhost:8181/api/v0/broker/lk/client-orders",
+        method: "patch",
+        url: "http://localhost:8181/api/v0/broker/lk/client-orders?buy",
         headers: { Authorization: this.$store.state.token },
         data: {
           orderId: this.clientOrderId,
@@ -175,12 +195,13 @@ export default {
         })
         .catch(err => {
           console.log(err);
+          this.errors.push(err.response.data.error);
         });
     },
     sellClientOrders() {
       axios({
-        method: "delete",
-        url: "http://localhost:8181/api/v0/broker/lk/client-orders",
+        method: "patch",
+        url: "http://localhost:8181/api/v0/broker/lk/client-orders?sell",
         headers: { Authorization: this.$store.state.token },
         data: {
           orderId: this.clientOrderId,
@@ -198,6 +219,27 @@ export default {
         })
         .catch(err => {
           console.log(err);
+          this.errors.push(err.response.data.error);
+        });
+    },
+    publishClientOrders() {
+      axios({
+        method: "patch",
+        url: "http://localhost:8181/api/v0/broker/lk/client-orders?publish",
+        headers: { Authorization: this.$store.state.token },
+        data: {
+          orderId: this.clientOrderToPublishId
+        }
+      })
+        .then(response => {
+          console.log(response.headers.authorization);
+          this.clientOrderToPublishId = "";
+          this.updatePageInfo();
+          //handle response and save JWT
+        })
+        .catch(err => {
+          console.log(err);
+          this.errors.push(err.response.data.error);
         });
     },
     getCapital() {
@@ -212,6 +254,10 @@ export default {
         })
         .catch(e => {
           console.log(e);
+          if (e.response.status === 401) {
+            this.$store.commit("remove");
+            this.$router.push("/");
+          }
         });
     },
     getStocks() {
@@ -226,6 +272,10 @@ export default {
         })
         .catch(e => {
           console.log(e);
+          if (e.response.status === 401) {
+            this.$store.commit("remove");
+            this.$router.push("/");
+          }
         });
     },
     getOwnedStocks() {
@@ -240,6 +290,10 @@ export default {
         })
         .catch(e => {
           console.log(e);
+          if (e.response.status === 401) {
+            this.$store.commit("remove");
+            this.$router.push("/");
+          }
         });
     },
     getClientOrders() {
@@ -254,6 +308,10 @@ export default {
         })
         .catch(e => {
           console.log(e);
+          if (e.response.status === 401) {
+            this.$store.commit("remove");
+            this.$router.push("/");
+          }
         });
     },
     updatePageInfo() {
@@ -261,6 +319,7 @@ export default {
       this.getStocks();
       this.getOwnedStocks();
       this.getClientOrders();
+      this.errors = [];
     }
   },
   created() {

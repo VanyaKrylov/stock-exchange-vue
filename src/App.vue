@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <h1 v-if="$router.currentRoute.path === '/'">Hi!</h1>
+    <h1 v-if="$router.currentRoute.path === '/'">
+      Hi!
+    </h1>
     <router-view></router-view>
   </div>
 </template>
@@ -9,8 +11,9 @@
 export default {
   data: () => ({
     token: ""
-  })
-}
+  }),
+  deactivated() {}
+};
 </script>
 
 <!--<style>
