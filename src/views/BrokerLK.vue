@@ -24,7 +24,9 @@
     </table>
     <h3>Buy company stocks</h3>
     <form class="buy-company-stocks" @submit.prevent="buyCompanyStocks">
+      <label for="id">Order id</label>
       <input type="text" placeholder="id" id="id" v-model="orderId" />
+      <label for="size">Amount</label>
       <input type="text" placeholder="size" id="size" v-model="orderSize" />
       <input type="submit" value="Buy" />
     </form>
@@ -71,6 +73,44 @@
       </tbody>
     </table>
     <h3>Manage clients orders</h3>
+    <form class="manage-client-orders">
+      <label for="idd">Order id</label>
+      <input
+        type="text"
+        name="orderId"
+        id="idd"
+        placeholder="id"
+        v-model="clientOrderId"
+      />
+      <label for="amount">Amount</label>
+      <input
+        type="text"
+        name="size"
+        id="amount"
+        placeholder="size"
+        v-model="clientOrderSize"
+      />
+      <label for="price">Price</label>
+      <input
+        type="text"
+        name="price"
+        id="price"
+        placeholder="sum"
+        v-model="clientOrderPrice"
+      />
+      <input
+        type="button"
+        name="buy"
+        value="Buy orders"
+        @click="buyClientOrders"
+      />
+      <input
+        type="button"
+        name="sell"
+        value="Sell orders"
+        @click="sellClientOrders"
+      />
+    </form>
   </div>
 </template>
 
@@ -86,14 +126,17 @@ export default {
       orderId: "",
       orderSize: "",
       ownedStocks: [],
-      clientOrders: []
+      clientOrders: [],
+      clientOrderId: "",
+      clientOrderSize: "",
+      clientOrderPrice: ""
     };
   },
   methods: {
     buyCompanyStocks() {
       axios({
         method: "post",
-        url: "http://localhost:8181/api/v0/broker/lk/buy-company-stocks",
+        url: "http://localhost:8181/api/v0/broker/lk/company-stocks",
         headers: { Authorization: this.$store.state.token },
         data: {
           id: this.orderId,
@@ -104,6 +147,52 @@ export default {
           console.log(response.headers.authorization);
           this.orderId = "";
           this.orderSize = "";
+          this.updatePageInfo();
+          //handle response and save JWT
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    buyClientOrders() {
+      axios({
+        method: "post",
+        url: "http://localhost:8181/api/v0/broker/lk/client-orders",
+        headers: { Authorization: this.$store.state.token },
+        data: {
+          orderId: this.clientOrderId,
+          size: this.clientOrderSize,
+          price: this.clientOrderPrice
+        }
+      })
+        .then(response => {
+          console.log(response.headers.authorization);
+          this.clientOrderId = "";
+          this.clientOrderSize = "";
+          this.clientOrderPrice = "";
+          this.updatePageInfo();
+          //handle response and save JWT
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    sellClientOrders() {
+      axios({
+        method: "delete",
+        url: "http://localhost:8181/api/v0/broker/lk/client-orders",
+        headers: { Authorization: this.$store.state.token },
+        data: {
+          orderId: this.clientOrderId,
+          size: this.clientOrderSize,
+          price: this.clientOrderPrice
+        }
+      })
+        .then(response => {
+          console.log(response.headers.authorization);
+          this.clientOrderId = "";
+          this.clientOrderSize = "";
+          this.clientOrderPrice = "";
           this.updatePageInfo();
           //handle response and save JWT
         })
